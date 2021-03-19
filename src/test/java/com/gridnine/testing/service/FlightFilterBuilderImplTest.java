@@ -2,11 +2,9 @@ package com.gridnine.testing.service;
 
 import com.gridnine.testing.entity.Flight;
 import com.gridnine.testing.entity.Segment;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +17,14 @@ class FlightFilterBuilderImplTest {
   static LocalDateTime inTwoHours = LocalDateTime.now().plusHours(2);
   static LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
-  List<Flight> normalFlightsInAfterNow;
+  List<Flight> normalFlightsAfterNow;
   List<Flight> normalFlightsDeparturesBeforeNow;
   List<Flight> moreThanTwoHoursOnGroundFlights;
   List<Flight> arrivalBeforeDeparture;
   List<Flight> testFlights;
 
   public void initNormalFlightsInAfterNow() {
-	normalFlightsInAfterNow = new ArrayList<>();
+	normalFlightsAfterNow = new ArrayList<>();
 	LocalDateTime inTwoHours = LocalDateTime.now().plusHours(2);
 	LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
 
@@ -42,8 +40,8 @@ class FlightFilterBuilderImplTest {
 	normalMultiSegments.add(new Segment(tomorrow.plusHours(10).plusMinutes(30), tomorrow.plusHours(14)));
 	Flight normalMultiSegmentFlight = new Flight(normalMultiSegments);
 
-	normalFlightsInAfterNow.add(normalSingleSegmentFlight);
-	normalFlightsInAfterNow.add(normalMultiSegmentFlight);
+	normalFlightsAfterNow.add(normalSingleSegmentFlight);
+	normalFlightsAfterNow.add(normalMultiSegmentFlight);
   }
 
   public void initNormalFlightsDeparturesBeforeNow() {
@@ -118,7 +116,7 @@ class FlightFilterBuilderImplTest {
 	initMoreThanTwoHoursOnGroundFlights();
 	initArrivalBeforeDeparture();
 
-	testFlights.addAll(normalFlightsInAfterNow);
+	testFlights.addAll(normalFlightsAfterNow);
 	testFlights.addAll(normalFlightsDeparturesBeforeNow);
 	testFlights.addAll(moreThanTwoHoursOnGroundFlights);
 	testFlights.addAll(arrivalBeforeDeparture);
@@ -186,6 +184,19 @@ class FlightFilterBuilderImplTest {
 	FlightFilterBuilder flightFilterBuilder = new FlightFilterBuilderImpl(testFlights);
 
 	List<Flight> filteredFlights = flightFilterBuilder
+			.filterSumTimeOnGroundMoreThanTwoHours()
+			.build();
+	assertEquals(expectedFlights, filteredFlights);
+  }
+
+  @Test
+  public void allFilters() {
+	List<Flight> expectedFlights = normalFlightsAfterNow;
+	FlightFilterBuilder flightFilterBuilder = new FlightFilterBuilderImpl(testFlights);
+
+	List<Flight> filteredFlights = flightFilterBuilder
+			.filterDepartureBeforeNow()
+			.filterArrivalBeforeDeparture()
 			.filterSumTimeOnGroundMoreThanTwoHours()
 			.build();
 	assertEquals(expectedFlights, filteredFlights);

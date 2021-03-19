@@ -5,6 +5,7 @@ import com.gridnine.testing.entity.Segment;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class FlightFilterBuilderImpl implements FlightFilterBuilder {
   private List<Flight> flights;
 
   public FlightFilterBuilderImpl(List<Flight> flights) {
-	this.flights = flights;
+	this.flights = new ArrayList<>(flights);
   }
 
   @Override
